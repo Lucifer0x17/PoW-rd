@@ -41,4 +41,9 @@ abstract contract FreelancerNFT is Context, ERC721URIStorage {
 
         emit NFTBurned(_msgSender(), tokenId);
     }
+
+    //* FUNCTION: GET the tokenID
+    function getTokenId() public view returns (uint256) {
+        return tokenCounter;
+    }
 }
