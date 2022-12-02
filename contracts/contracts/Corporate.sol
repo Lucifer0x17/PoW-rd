@@ -195,6 +195,23 @@ contract Corporate is Context, ReentrancyGuard {
         return calculateAmountToBePaid(30);
     }
 
+    //* FUNCTION: To get the balance of the contract.
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
+    }
+
+    //* FUNCTION: To get the employee details.
+    function getEmployeeDetails(
+        address _employee
+    ) public view returns (Employee memory) {
+        return employeeMapping[_employee];
+    }
+
+    //* FUNCTION: Amount to be paid in {15,30,60} days.
+    function getAmountToBePaid(uint256 _days) public view returns (uint256) {
+        return calculateAmountToBePaid(_days);
+    }
+
     //============================= INTERNAL FUNCTIONS =============================//
     //* FUNCTION: Calculate amount to be paid in the next { 15, 30, 60 } days.
     function calculateAmountToBePaid(
