@@ -4,7 +4,7 @@
   "description": "typescript node.js express.js zod boilerplate",
   "main": "server.ts",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts --files",
+    "dev": "ts-node-dev --respawn --transpile-only src/services/revise.service.ts --files",
     "start": "node ./dist/server",
     "build": "tsc && cp -f ./src/config/config.env ./dist/config",
     "postinstall": "tsc -p tsconfig.release.json"
@@ -14,13 +14,15 @@
   "license": "MIT",
   "licenseName": "MIT",
   "dependencies": {
-    "@prisma/client": "^4.5.0",
+    "@ensdomains/ensjs": "^3.0.0-alpha.37",
     "argon2": "^0.30.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
+    "ethers": "^5.7.2",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
+    "revise-sdk": "^0.2.0",
     "zod": "^3.19.1"
   },
   "devDependencies": {
