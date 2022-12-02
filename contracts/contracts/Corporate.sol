@@ -75,4 +75,100 @@ contract Corporate is Context, ReentrancyGuard {
         require(isAdmin, "Caller is not Admin");
         _;
     }
+
+    // ==================== SUPER ADMIN Functions ====================
+
+    //* FUNCTION: TO add the admin to the admins array and notiying the event.
+    function addAdmin(address _admin) private onlySuperAdmin {
+        admins.push(_admin);
+
+        emit AdminAdded(_admin);
+    }
+
+    //* FUNCTION: TO remove the admin from the admins array and notiying the event.
+    function removeAdmin(address _admin) private onlySuperAdmin {
+        for (uint i = 0; i < admins.length; i++) {
+            if (admins[i] == _admin) {
+                admins[i] = admins[admins.length - 1];
+                admins.pop();
+                break;
+            }
+        }
+
+        emit AdminRemoved(_admin);
+    }
+
+    // ==================== ADMIN Functions ====================
+    //* FUNCTION: TO add the employee to the employees array and notiying the event.
+    function addEmployee(
+        string memory _name,
+        address _walletAddress,
+        uint256 _payPeriod,
+        uint256 _payAmount,
+        uint256 _startTimestamp
+    ) public onlyAdmin {
+        // Checking if the employee is already added or not.
+        require(
+            employeeMapping[_walletAddress].walletAddress == address(0),
+            "Employee already added"
+        );
+
+        // Adding the employee to the employees array.
+        employees.push(_walletAddress);
+
+        // Adding the employee to the employeeMapping.
+        employeeMapping[_walletAddress] = Employee(
+            _name,
+            _walletAddress,
+            _payPeriod,
+            _payAmount,
+            _startTimestamp,
+            _startTimestamp + getSeconds(_payPeriod)
+        );
+
+        emit EmployeeAdded(_walletAddress);
+    }
+
+    //* FUNCTION: TO remove the employee from the employees array and notiying the event.
+    function removeEmployee(address _walletAddress) public onlyAdmin {
+        // Checking if the employee is already added or not.
+        require(
+            employeeMapping[_walletAddress].walletAddress != address(0),
+            "Employee not added"
+        );
+
+        // Removing the employee from the employees array.
+        for (uint i = 0; i < employees.length; i++) {
+            if (employees[i] == _walletAddress) {
+                employees[i] = employees[employees.length - 1];
+                employees.pop();
+                break;
+            }
+        }
+
+        // Removing the employee from the employeeMapping.
+        delete employeeMapping[_walletAddress];
+
+        emit EmployeeRemoved(_walletAddress);
+    }
+
+    //======================GET FUNCTIONS=====================//
+    //* FUNCTION: TO get the seconds of the pay period.
+    function getSeconds(
+        uint256 _payPeriod
+    ) public pure returns (uint256 seconds_) {
+        if (_payPeriod == uint256(PayPeriod.week)) {
+            return 604800;
+        } else if (_payPeriod == uint256(PayPeriod.twoWeeks)) {
+            return 1209600;
+        } else if (_payPeriod == uint256(PayPeriod.month)) {
+            return 2629743;
+        } else if (_payPeriod == uint256(PayPeriod.threeMonths)) {
+            return 7889229;
+        } else if (_payPeriod == uint256(PayPeriod.sixMonths)) {
+            return 15778458;
+        } else if (_payPeriod == uint256(PayPeriod.year)) {
+            return 31556926;
+        }
+    }
 }
