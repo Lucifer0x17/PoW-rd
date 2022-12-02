@@ -33,6 +33,24 @@ contract Corporate is Context, ReentrancyGuard {
         uint256 nextPayTimestamp;
     }
 
+    // =============EVENTS================= //
+    event AdminAdded(address indexed _admin);
+    event AdminRemoved(address indexed _admin);
+    event EmployeeAdded(address indexed _employee);
+    event EmployeeRemoved(address indexed _employee);
+    event FundsAdded(uint256 _amount);
+    event FundsWithdrawn(uint256 _amount);
+
+    // ==================== ENUMS ====================
+    enum PayPeriod {
+        week,
+        twoWeeks,
+        month,
+        threeMonths,
+        sixMonths,
+        year
+    }
+
     // ==================== Mappings ====================
     // Mapping for the employee.
     mapping(address => Employee) public employeeMapping;
