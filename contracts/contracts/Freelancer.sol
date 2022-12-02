@@ -13,6 +13,8 @@ abstract contract FreelancerNFT is Context, ERC721URIStorage {
 
     uint256 public tokenCounter = 0;
 
+    mapping(uint256 => string) public tokenURIs;
+
     constructor() ERC721("FreelancerNFT", "FLNFT") {
         console.log("Deploying a FreelancerNFT with Solidity");
         companyAddress = _msgSender();
@@ -30,6 +32,8 @@ abstract contract FreelancerNFT is Context, ERC721URIStorage {
         _setTokenURI(tokenCounter + 1, _tokenURI);
         _setApprovalForAll(_msgSender(), address(this), true);
 
+        tokenURIs[tokenCounter] = _tokenURI;
+
         tokenCounter++;
 
         emit NFTMinted(_to, tokenCounter);
@@ -45,5 +49,10 @@ abstract contract FreelancerNFT is Context, ERC721URIStorage {
     //* FUNCTION: GET the tokenID
     function getTokenId() public view returns (uint256) {
         return tokenCounter;
+    }
+
+    //* FUNCTION: GET the tokenURI
+    function getTokenURI(uint256 tokenId) public view returns (string memory) {
+        return tokenURIs[tokenId];
     }
 }
