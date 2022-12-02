@@ -152,8 +152,26 @@ contract Corporate is Context, ReentrancyGuard {
         emit EmployeeRemoved(_walletAddress);
     }
 
+    //* FUNCTION: To add funds to the contract.
+    function addFunds() public payable onlyAdmin {
+        emit FundsAdded(msg.value);
+    }
+
+    //* FUNCTION: To withdraw funds from the contract.
+    function withdrawFunds(uint256 _amount) public onlyAdmin nonReentrant {
+        require(
+            address(this).balance - getWithdrawableAmount() >= _amount,
+            "Insufficient funds in the contract"
+        );
+
+        (bool success, ) = _msgSender().call{value: _amount}("");
+        require(success, "Withdraw failed.");
+
+        emit FundsWithdrawn(_amount);
+    }
+
     //======================GET FUNCTIONS=====================//
-    //* FUNCTION: TO get the seconds of the pay period.
+    //* FUNCTION: To get the seconds of the pay period.
     function getSeconds(
         uint256 _payPeriod
     ) public pure returns (uint256 seconds_) {
@@ -170,5 +188,29 @@ contract Corporate is Context, ReentrancyGuard {
         } else if (_payPeriod == uint256(PayPeriod.year)) {
             return 31556926;
         }
+    }
+
+    //* FUNCTION: To get the withdrawable amount.
+    function getWithdrawableAmount() public view returns (uint256 amount) {
+        return calculateAmountToBePaid(30);
+    }
+
+    //============================= INTERNAL FUNCTIONS =============================//
+    //* FUNCTION: Calculate amount to be paid in the next { 15, 30, 60 } days.
+    function calculateAmountToBePaid(
+        uint256 _days
+    ) internal view returns (uint256) {
+        uint256 amountToBePaid = 0;
+        for (uint i = 0; i < employees.length; i++) {
+            if (
+                block.timestamp >=
+                employeeMapping[employees[i]].nextPayTimestamp &&
+                employeeMapping[employees[i]].nextPayTimestamp <
+                block.timestamp + (_days * 1 days)
+            ) {
+                amountToBePaid += employeeMapping[employees[i]].payAmount;
+            }
+        }
+        return amountToBePaid;
     }
 }
