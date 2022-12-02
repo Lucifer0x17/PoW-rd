@@ -36,4 +36,25 @@ contract Corporate is Context, ReentrancyGuard {
     // ==================== Mappings ====================
     // Mapping for the employee.
     mapping(address => Employee) public employeeMapping;
+
+    // =============MODIFIERS================= //
+
+    // To check if the caller is Super Admin or not.
+    modifier onlySuperAdmin() {
+        require(_msgSender() == superAdmin, "Caller is not Super Admin");
+        _;
+    }
+
+    // To check if the caller is Admin or not.
+    modifier onlyAdmin() {
+        bool isAdmin = false;
+        for (uint i = 0; i < admins.length; i++) {
+            if (admins[i] == _msgSender()) {
+                isAdmin = true;
+                break;
+            }
+        }
+        require(isAdmin, "Caller is not Admin");
+        _;
+    }
 }
