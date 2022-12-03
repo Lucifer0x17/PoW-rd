@@ -15,6 +15,9 @@
     "hardhat": "^2.12.3"
   },
   "dependencies": {
-    "@chainlink/contracts": "^0.5.1"
+    "@chainlink/contracts": "^0.5.1",
+    "@rainbow-me/rainbowkit": "^0.8.0",
+    "@web3auth/base": "^3.2.0",
+    "@web3auth/modal": "^3.2.0"
   }
 }
