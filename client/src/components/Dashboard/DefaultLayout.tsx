@@ -64,6 +64,7 @@ const DefaultLayout: React.FC<BaseProps> = ({ children, base }) => {
 					</Link>
 				</div>
 				<div className="grid grid-flow-row gap-3">
+					{/* @ts-ignore */}
 					{selectedRoute.map(({ href, label, icon }) => {
 						return (
 							<NavContainer
