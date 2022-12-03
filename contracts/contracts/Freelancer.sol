@@ -2,16 +2,18 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/utils/Context.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
 import "hardhat/console.sol";
 
-abstract contract FreelancerNFT is Context, ERC721URIStorage {
+abstract contract FreelancerNFT is Counter, Context, ERC721URIStorage {
     address companyAddress;
 
-    uint256 public tokenCounter = 0;
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIdCounter;
 
     mapping(uint256 => string) public tokenURIs;
 
@@ -28,15 +30,16 @@ abstract contract FreelancerNFT is Context, ERC721URIStorage {
 
     //* FUNCTION: MINT an invoice
     function mintNFT(address _to, string memory _tokenURI) public {
-        _safeMint(_to, tokenCounter + 1);
-        _setTokenURI(tokenCounter + 1, _tokenURI);
+        uint256 tokenId = _tokenIdCounter.current();
+        _tokenIdCounter.increment();
+
+        _safeMint(_to, tokenId);
+        _setTokenURI(tokenId, _tokenURI);
         _setApprovalForAll(_msgSender(), address(this), true);
 
-        tokenURIs[tokenCounter] = _tokenURI;
+        tokenURIs[tokenId] = _tokenURI;
 
-        tokenCounter++;
-
-        emit NFTMinted(_to, tokenCounter);
+        emit NFTMinted(_to, tokenId);
     }
 
     //* FUNCTION: BURN an invoice
@@ -48,7 +51,7 @@ abstract contract FreelancerNFT is Context, ERC721URIStorage {
 
     //* FUNCTION: GET the tokenID
     function getTokenId() public view returns (uint256) {
-        return tokenCounter;
+        return _tokenIdCounter.current();
     }
 
     //* FUNCTION: GET the tokenURI
