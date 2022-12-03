@@ -86,14 +86,14 @@ contract Corporate is Context, ReentrancyGuard {
     // ==================== SUPER ADMIN Functions ====================
 
     //* FUNCTION: TO add the admin to the admins array and notiying the event.
-    function addAdmin(address _admin) private onlySuperAdmin {
+    function addAdmin(address _admin) public onlySuperAdmin {
         admins.push(_admin);
 
         emit AdminAdded(_admin);
     }
 
     //* FUNCTION: TO remove the admin from the admins array and notiying the event.
-    function removeAdmin(address _admin) private onlySuperAdmin {
+    function removeAdmin(address _admin) public onlySuperAdmin {
         for (uint i = 0; i < admins.length; i++) {
             if (admins[i] == _admin) {
                 admins[i] = admins[admins.length - 1];
@@ -110,7 +110,7 @@ contract Corporate is Context, ReentrancyGuard {
     function addEmployee(
         string memory _name,
         address _walletAddress,
-        uint256 _payPeriod,
+        uint8 _payPeriod,
         uint256 _payAmount,
         uint256 _startTimestamp
     ) public onlyAdmin {
@@ -127,9 +127,9 @@ contract Corporate is Context, ReentrancyGuard {
         employeeMapping[_walletAddress] = Employee(
             _name,
             _walletAddress,
-            _payPeriod,
+            getSeconds(_payPeriod),
             _payAmount,
-            _startTimestamp,
+            block.timestamp + _startTimestamp,
             _startTimestamp + getSeconds(_payPeriod)
         );
 
@@ -210,21 +210,21 @@ contract Corporate is Context, ReentrancyGuard {
 
     //======================GET FUNCTIONS=====================//
     //* FUNCTION: To get the seconds of the pay period.
-    function getSeconds(
-        uint256 _payPeriod
-    ) public pure returns (uint256 seconds_) {
-        if (_payPeriod == uint256(PayPeriod.week)) {
-            return 604800;
-        } else if (_payPeriod == uint256(PayPeriod.twoWeeks)) {
-            return 1209600;
-        } else if (_payPeriod == uint256(PayPeriod.month)) {
-            return 2629743;
-        } else if (_payPeriod == uint256(PayPeriod.threeMonths)) {
-            return 7889229;
-        } else if (_payPeriod == uint256(PayPeriod.sixMonths)) {
-            return 15778458;
-        } else if (_payPeriod == uint256(PayPeriod.year)) {
-            return 31556926;
+    function getSeconds(uint8 index) internal pure returns (uint64 time) {
+        require(index <= uint8(type(PayPeriod).max), "ERR:ST"); //ST => Small Time
+
+        if (index == 0) {
+            time = uint64(7 days);
+        } else if (index == 1) {
+            time = uint64(14 days);
+        } else if (index == 2) {
+            time = uint64(30 days);
+        } else if (index == 3) {
+            time = uint64(90 days);
+        } else if (index == 4) {
+            time = uint64(180 days);
+        } else if (index == 5) {
+            time = uint64(365 days);
         }
     }
 
@@ -266,7 +266,7 @@ contract Corporate is Context, ReentrancyGuard {
                 amountToBePaid += employeeMapping[employees[i]].payAmount;
             }
         }
-        return amountToBePaid;
+        return address(this).balance - amountToBePaid;
     }
 
     //* FUNCTION: Accepting the request of the freelancer and adding the tokenId to the freelancer mappings.
