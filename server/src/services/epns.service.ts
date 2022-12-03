@@ -8,7 +8,7 @@ const Pkey = `0x${process.env.EPNS_PRIVATE_KEY}`;
 const signer = new ethers.Wallet(Pkey);
 
 
-export const sendNotification = async ({ title, titleBody, msgTitle, msgBody }: { title: string, titleBody: string, msgTitle: string, msgBody: string }, recipients: string) => {
+export const sendNotification = async ({ msgTitle, msgBody }: { msgTitle: string, msgBody: string }, recipients: string) => {
     console.log(recipients, 'array from the method')
 
     try {
@@ -17,8 +17,8 @@ export const sendNotification = async ({ title, titleBody, msgTitle, msgBody }: 
             type: 3,
             identityType: 2,
             notification: {
-                title: title,
-                body: titleBody
+                title: "Hey! you got a notification!",
+                body: ""
             },
             payload: {
                 title: msgTitle,
@@ -39,14 +39,3 @@ export const sendNotification = async ({ title, titleBody, msgTitle, msgBody }: 
         console.error('Error: ', err);
     }
 }
-
-const arr = ["eip155:80001:0xa60f738a60BCA515Ac529b7335EC7CB2eE3891d2", "eip155:80001:0x1Cb30cb181D7854F91c2410BD037E6F42130e860"]
-
-arr.forEach(arr => {
-    sendNotification({
-        title: "Msg",
-        titleBody: "YMeh",
-        msgTitle: "Bleh",
-        msgBody: "Hey Yash!"
-    }, arr);
-})

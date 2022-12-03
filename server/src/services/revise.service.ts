@@ -16,9 +16,17 @@ export const createNFT = async (data: NftDataInput, properties: NftPropertiesInp
 export const updateIsCleared = async (nftId: string) => {
     try {
         const nft = await revise.fetchNFT(nftId);
-        console.log("nft:", nft)
         const result = await revise.nft(nft).setProperty("isCleared", "true").setImage("https://img.myloview.com/posters/a-cash-invoice-with-tick-mark-and-pencil-concept-of-paid-700-235514286.jpg").save();
         return { sucess: true, result }
+    } catch (error) {
+        console.log(error)
+        return { success: false }
+    }
+}
+
+export const fetchMyNfts = async () => {
+    try {
+        return await revise.fetchNFT("Get from smart contract");
     } catch (error) {
         console.log(error)
         return { success: false }

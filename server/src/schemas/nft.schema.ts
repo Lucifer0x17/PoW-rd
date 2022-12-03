@@ -37,5 +37,7 @@ export type NftDataInput = TypeOf<typeof nftData>
 export type NftPropertiesInput = {
     amount?: number;
     isCleared?: string;
-    walletAddress?: string
+    walletAddress?: string;
+    isVerified?: string;
+    companyAddress?: string;
 }[]
