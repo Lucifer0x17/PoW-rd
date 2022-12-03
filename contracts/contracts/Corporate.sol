@@ -22,9 +22,6 @@ contract Corporate is Context, ReentrancyGuard {
     // Addresses of the employees.
     address[] public employees;
 
-    // Addresses of the freelancers.
-    address[] public freelancers;
-
     // ==================== Structs ====================
     // Struct for the employee.
     struct Employee {
@@ -34,6 +31,24 @@ contract Corporate is Context, ReentrancyGuard {
         uint256 payAmount;
         uint256 startTimestamp;
         uint256 nextPayTimestamp;
+    }
+
+    // ==================== Mappings ====================
+    // Mapping for the employee.
+    mapping(address => Employee) public employeeMapping;
+
+    // Mapping for the freelancer's accepted invoices. (address => tokenID => tokenURI)
+    mapping(address => mapping(uint256 => string))
+        public freelancerInvoiceMapping;
+
+    // ==================== ENUMS ====================
+    enum PayPeriod {
+        week,
+        twoWeeks,
+        month,
+        threeMonths,
+        sixMonths,
+        year
     }
 
     // =============EVENTS================= //
@@ -46,23 +61,6 @@ contract Corporate is Context, ReentrancyGuard {
     event InvoiceGenerated(uint256 indexed tokenId, address);
     event InvoiceRejected(uint256 indexed tokenId, address);
     event InvoicePaid(uint256 indexed tokenId, address);
-
-    // ==================== ENUMS ====================
-    enum PayPeriod {
-        week,
-        twoWeeks,
-        month,
-        threeMonths,
-        sixMonths,
-        year
-    }
-
-    // ==================== Mappings ====================
-    // Mapping for the employee.
-    mapping(address => Employee) public employeeMapping;
-
-    // Mapping for the freelancer's invoices.
-    mapping(address => uint256[]) public freelancerInvoiceMapping;
 
     // =============MODIFIERS================= //
 
@@ -183,10 +181,11 @@ contract Corporate is Context, ReentrancyGuard {
     function responseToInovice(
         bool _response,
         uint256 _tokenId,
+        string memory _tokenURI,
         address _freelancerAddress
     ) public onlyAdmin {
         if (_response == true) {
-            generateInvoice(_tokenId, _freelancerAddress);
+            acceptInvoice(_tokenId, _freelancerAddress, _tokenURI);
         } else {
             emit InvoiceRejected(_tokenId, _freelancerAddress);
         }
@@ -198,17 +197,13 @@ contract Corporate is Context, ReentrancyGuard {
         address _freelancerAddress,
         uint256 _amountToPay
     ) public onlyAdmin {
-        // Getting the invoice from the freelancer.
-        uint256[] storage invoices = freelancerInvoiceMapping[
-            _freelancerAddress
-        ];
+        require(
+            address(this).balance - getWithdrawableAmount() >= _amountToPay,
+            "Insufficient funds in the contract"
+        );
 
-        // Checking if the invoice is generated or not.
-        require(invoices[_tokenId] != 0, "Invoice not generated");
-
-        // Paying the freelancer.
         (bool success, ) = _freelancerAddress.call{value: _amountToPay}("");
-        require(success, "Payment failed.");
+        require(success, "Withdraw failed.");
 
         emit InvoicePaid(_tokenId, _freelancerAddress);
     }
@@ -275,11 +270,12 @@ contract Corporate is Context, ReentrancyGuard {
     }
 
     //* FUNCTION: Accepting the request of the freelancer and adding the tokenId to the freelancer mappings.
-    function generateInvoice(
+    function acceptInvoice(
         uint256 tokenId,
-        address _freelancerAddress
+        address _freelancerAddress,
+        string memory _tokenURI
     ) internal {
-        freelancerInvoiceMapping[_freelancerAddress].push(tokenId);
+        freelancerInvoiceMapping[_freelancerAddress][tokenId] = _tokenURI;
 
         emit InvoiceGenerated(tokenId, _freelancerAddress);
     }
