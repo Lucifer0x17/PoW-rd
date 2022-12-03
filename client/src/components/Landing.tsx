@@ -131,7 +131,7 @@ const HeroSection = () => {
 						onTouchStart={() => setShowGithub(true)}
 						onMouseOut={() => setShowGithub(false)}
 						onTouchEnd={() => setShowGithub(false)}
-						href="https://github.com/boidushya/payroll-client"
+						href="https://github.com/Lucifer0x17/potatoPotata-ETHIndia"
 						target={`_blank`}
 						rel="noreferrer"
 						style={{
