@@ -14,7 +14,6 @@ export const walletAddress = async () => {
 };
 
 // const address = await smartAccountFunc.address;
-
 const data = erc721Interface.encodeFunctionData("mintNFT", [
   recipientAddress,
   tokenURI,
@@ -29,12 +28,12 @@ const tx1 = {
 
 smartAccountFunc.on("txHashGenerated", (response: any) => {
   console.log("txHashGenerated event received via emitter", response);
-  showSuccessMessage(`Transaction sent: ${response.hash}`);
+  console.log(`Transaction sent: ${response.hash}`);
 });
 
 smartAccountFunc.on("txMined", (response: any) => {
   console.log("txMined event received via emitter", response);
-  showSuccessMessage(`Transaction mined: ${response.hash}`);
+  console.log(`Transaction mined: ${response.hash}`);
 });
 
 smartAccountFunc.on("error", (response: any) => {
