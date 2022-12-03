@@ -19,7 +19,7 @@ contract Corporate is Context, AutomationCompatibleInterface, ReentrancyGuard {
 
     // ==================== Arrays ====================
     // Addresses of the admin.
-    address[] public admins;
+    // address[] public admins;
 
     // Addresses of the employees.
     address[] public employees;
@@ -73,39 +73,39 @@ contract Corporate is Context, AutomationCompatibleInterface, ReentrancyGuard {
     }
 
     // To check if the caller is Admin or not.
-    modifier onlyAdmin() {
-        bool isAdmin = false;
-        for (uint i = 0; i < admins.length; i++) {
-            if (admins[i] == _msgSender()) {
-                isAdmin = true;
-                break;
-            }
-        }
-        require(isAdmin, "Caller is not Admin");
-        _;
-    }
+    // modifier onlyAdmin() {
+    //     bool isAdmin = false;
+    //     for (uint i = 0; i < admins.length; i++) {
+    //         if (admins[i] == _msgSender()) {
+    //             isAdmin = true;
+    //             break;
+    //         }
+    //     }
+    //     require(isAdmin, "Caller is not Admin");
+    //     _;
+    // }
 
-    // ==================== SUPER ADMIN Functions ====================
+    // // ==================== SUPER ADMIN Functions ====================
 
-    //* FUNCTION: TO add the admin to the admins array and notiying the event.
-    function addAdmin(address _admin) public onlySuperAdmin {
-        admins.push(_admin);
+    // //* FUNCTION: TO add the admin to the admins array and notiying the event.
+    // function addAdmin(address _admin) public onlySuperAdmin {
+    //     admins.push(_admin);
 
-        emit AdminAdded(_admin);
-    }
+    //     emit AdminAdded(_admin);
+    // }
 
-    //* FUNCTION: TO remove the admin from the admins array and notiying the event.
-    function removeAdmin(address _admin) public onlySuperAdmin {
-        for (uint i = 0; i < admins.length; i++) {
-            if (admins[i] == _admin) {
-                admins[i] = admins[admins.length - 1];
-                admins.pop();
-                break;
-            }
-        }
+    // //* FUNCTION: TO remove the admin from the admins array and notiying the event.
+    // function removeAdmin(address _admin) public onlySuperAdmin {
+    //     for (uint i = 0; i < admins.length; i++) {
+    //         if (admins[i] == _admin) {
+    //             admins[i] = admins[admins.length - 1];
+    //             admins.pop();
+    //             break;
+    //         }
+    //     }
 
-        emit AdminRemoved(_admin);
-    }
+    //     emit AdminRemoved(_admin);
+    // }
 
     // ==================== ADMIN Functions ====================
     //* FUNCTION: TO add the employee to the employees array and notiying the event.
@@ -115,7 +115,7 @@ contract Corporate is Context, AutomationCompatibleInterface, ReentrancyGuard {
         uint8 _payPeriod,
         uint256 _payAmount,
         uint256 _startTimestamp
-    ) public onlyAdmin {
+    ) public onlySuperAdmin {
         // Checking if the employee is already added or not.
         require(
             employeeMapping[_walletAddress].walletAddress == address(0),
@@ -139,7 +139,7 @@ contract Corporate is Context, AutomationCompatibleInterface, ReentrancyGuard {
     }
 
     //* FUNCTION: TO remove the employee from the employees array and notiying the event.
-    function removeEmployee(address _walletAddress) public onlyAdmin {
+    function removeEmployee(address _walletAddress) public onlySuperAdmin {
         // Checking if the employee is already added or not.
         require(
             employeeMapping[_walletAddress].walletAddress != address(0),
@@ -162,12 +162,12 @@ contract Corporate is Context, AutomationCompatibleInterface, ReentrancyGuard {
     }
 
     //* FUNCTION: To add funds to the contract.
-    function addFunds() public payable onlyAdmin {
+    function addFunds() public payable onlySuperAdmin {
         emit FundsAdded(msg.value);
     }
 
     //* FUNCTION: To withdraw funds from the contract.
-    function withdrawFunds(uint256 _amount) public onlyAdmin nonReentrant {
+    function withdrawFunds(uint256 _amount) public onlySuperAdmin nonReentrant {
         require(
             address(this).balance - getWithdrawableAmount() >= _amount,
             "Insufficient funds in the contract"
@@ -180,7 +180,7 @@ contract Corporate is Context, AutomationCompatibleInterface, ReentrancyGuard {
     }
 
     //* FUNCTION: Pay the employee their salary.
-    function payEmployee(address _walletAddress) public onlyAdmin {
+    function payEmployee(address _walletAddress) public onlySuperAdmin {
         // Checking if the employee is already added or not.
         require(
             employeeMapping[_walletAddress].walletAddress != address(0),
@@ -211,7 +211,7 @@ contract Corporate is Context, AutomationCompatibleInterface, ReentrancyGuard {
         uint256 _tokenId,
         string memory _tokenURI,
         address _freelancerAddress
-    ) public onlyAdmin {
+    ) public onlySuperAdmin {
         if (_response == true) {
             acceptInvoice(_tokenId, _freelancerAddress, _tokenURI);
         } else {
@@ -224,7 +224,7 @@ contract Corporate is Context, AutomationCompatibleInterface, ReentrancyGuard {
         uint256 _tokenId,
         address _freelancerAddress,
         uint256 _amountToPay
-    ) public onlyAdmin {
+    ) public onlySuperAdmin {
         require(
             address(this).balance - getWithdrawableAmount() >= _amountToPay,
             "Insufficient funds in the contract"
