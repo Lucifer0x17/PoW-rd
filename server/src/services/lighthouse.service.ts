@@ -52,7 +52,7 @@ export const decryptDeployed = async (cid: string) => {
 export const getEmployeData = async (publicKey: string) => {
     const uploads = await lighthouse.getUploads(publicKey)
     const fileMetaData = uploads.data.uploads;
-    fileMetaData.splice(fileMetaData.length - 2, 2);
+    fileMetaData.splice(fileMetaData.length - 3, 3);
     const promises = await uploads.data.uploads.map(async (encData: any) => {
         return await decryptDeployed(encData.cid)
     })
@@ -60,5 +60,5 @@ export const getEmployeData = async (publicKey: string) => {
 }
 
 // deployEncryptedFile({ success: true });
-getEmployeData("0xa60f738a60BCA515Ac529b7335EC7CB2eE3891d2")
+// getEmployeData("0xa60f738a60BCA515Ac529b7335EC7CB2eE3891d2")
 // decryptDeployed("QmZdjCLN4YXDrp7inFJnXusRPM2u2zC7Y3VYSrLA4WXewD")
