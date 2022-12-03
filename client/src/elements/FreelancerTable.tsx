@@ -93,15 +93,36 @@ function FreelancerTable() {
 						accessor: "status",
 						Cell: ({ value }: any) => {
 							return (
-								<span className="flex text-zinc-300 px-3 pr-4 leading-none py-2 rounded-full bg-zinc-700 items-center gap-2 w-fit">
-									<img src={ENSLogo} className=" w-4 h-4" />
-									{value}
+								<span
+									className={`flex text-zinc-300 px-2 pr-3 leading-none py-1 rounded-full bg-zinc-700 ${
+										value
+											? `bg-green-500 border-green-500 text-green-400`
+											: `bg-yellow-500 border-yellow-500 text-yellow-400`
+									} items-center gap-1.5 w-fit bg-opacity-20 border border-opacity-50`}
+								>
+									<svg
+										height="8"
+										width="8"
+										viewBox="0 0 100 100"
+										className="fill-current"
+									>
+										<circle cx="50" cy="50" r="40" />
+									</svg>
+									<span
+										className={`text-sm leading-none ${
+											value
+												? `text-green-200`
+												: `text-yellow-200`
+										}`}
+									>
+										{value ? `Cleared` : `Pending`}
+									</span>
 								</span>
 							);
 						},
 					},
 					{
-						Header: "Assignment Details",
+						Header: "Description",
 						accessor: "details",
 					},
 				],

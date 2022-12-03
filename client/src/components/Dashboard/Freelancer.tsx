@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import DefaultLayout from "@/components/Dashboard/DefaultLayout";
 import { useParams } from "react-router-dom";
 import Button from "@/elements/Button";
@@ -7,50 +7,97 @@ import { toast } from "react-toastify";
 import { useDataStore } from "@/contexts/store";
 import FreelancerTable from "@/elements/FreelancerTable";
 
-const Balance = () => {
-	const balance = useDataStore(state => state.balance);
-	const updateBalance = useDataStore(state => state.updateBalance);
-	const provider = useDataStore(state => state.provider);
-	useEffect(() => {
-		setTimeout(() => {
-			updateBalance(2.8);
-		}, 2000);
-	}, []);
-	console.log(provider);
+interface InfoTypes {
+	name: string | null;
+	address: string | null;
+	amount: number | null;
+	description: string | null;
+}
+
+//@ts-ignore
+const GenerateInvoice = () => {
+	const [info, setInfo] = useState({
+		name: null,
+		address: null,
+		amount: null,
+		description: null,
+	});
+	const handleSubmit = () => {
+		// Replace with real backend code
+		// axios.post(url,info).then().catch()
+	};
 	return (
-		<div className="pb-8 w-full flex items-end justify-between">
-			<span
-				className="font-extra font-light text-xl text-animate-up"
-				style={{
-					//@ts-ignore
-					"--start": "0s",
-					"--delay": "200ms",
-				}}
-			>
-				Balance
-			</span>
-			<div
-				style={{
-					//@ts-ignore
-					"--start": "0s",
-					"--delay": "250ms",
-				}}
-				className="dotted-line block-animate-up"
-			/>
-			<h1
-				style={{
-					//@ts-ignore
-					"--start": "0s",
-					"--delay": "300ms",
-					display: "flex",
-				}}
-				className="font-headline text-6xl w-fit text-gradient leading-none text-animate-up gap-2"
-			>
-				<span>$</span>
-				{balance || (
-					<span className="h-14 w-16 rounded-xl bg-zinc-800 animate-pulse" />
-				)}
-			</h1>
+		<div className="py-8 pt-0 block">
+			<div className="ReactModal__Content !rounded-none overflow-hidden !ml-0 !scale-100">
+				<div className="flex justify-between py-6 px-8 text-lg font-secondary sticky bg-zinc-900 top-0 left-0 z-20 border-b border-gray-400 border-opacity-10">
+					<span className="">Invoice Generator</span>
+				</div>
+				<div className="w-fit relative max-h-[22rem] p-8">
+					<form className="w-full space-y-4">
+						<div className="flex items-center gap-4">
+							<input
+								className="bg-zinc-800 w-fit appearance-none border-2 border-zinc-700 rounded py-2 px-4 text-zinc-200 leading-tight focus:outline-none focus:bg-zinc-800	 focus:border-sky-800"
+								type="text"
+								value={info.name || ""}
+								onChange={e => {
+									setInfo({
+										...info,
+										//@ts-ignore
+										name: e.target.value,
+									});
+								}}
+								placeholder="Company Name"
+							/>
+							<input
+								className="bg-zinc-800 w-fit appearance-none border-2 border-zinc-700 rounded py-2 px-4 text-zinc-200 leading-tight focus:outline-none focus:bg-zinc-800	 focus:border-sky-800"
+								type="text"
+								value={info.address || ""}
+								onChange={e => {
+									setInfo({
+										...info,
+										//@ts-ignore
+										address: e.target.value,
+									});
+								}}
+								placeholder="Company ENS"
+							/>
+						</div>
+						<div className="flex items-center gap-4">
+							<input
+								className="bg-zinc-800 w-fit appearance-none border-2 border-zinc-700 rounded py-2 px-4 text-zinc-200 leading-tight focus:outline-none focus:bg-zinc-800	 focus:border-sky-800"
+								type="text"
+								value={info.amount || ""}
+								onChange={e => {
+									setInfo({
+										...info,
+										//@ts-ignore
+										amount: parseFloat(e.target.value),
+									});
+								}}
+								placeholder="Amount"
+							/>
+						</div>
+						<input
+							className="bg-zinc-800 w-full appearance-none border-2 border-zinc-700 rounded py-2 px-4 text-zinc-200 leading-tight focus:outline-none focus:bg-zinc-800	 focus:border-sky-800"
+							type="text"
+							value={info.description || ""}
+							onChange={e => {
+								setInfo({
+									...info,
+									//@ts-ignore
+									description: e.target.value,
+								});
+							}}
+							placeholder="Assignment Description"
+						/>
+					</form>
+				</div>
+				<div className="sticky bottom-0 right-0 flex flex-row-reverse gap-4 px-8 py-6 mt-0 border-t border-gray-400 bg-zinc-900 border-opacity-10">
+					<Button variant="primary" onClick={handleSubmit}>
+						Generate Invoice
+					</Button>
+				</div>
+			</div>
 		</div>
 	);
 };
@@ -62,7 +109,9 @@ const Home = () => {
 			{/* TODO:
 				[] Current Balance for contract
 			*/}
-			<Balance />
+			<h3 className="font-headline text-3xl mb-4">Generate Invoice</h3>
+			<GenerateInvoice />
+			<h3 className="font-headline text-3xl mb-4">List of Invoice</h3>
 			<FreelancerTable />
 		</>
 	);

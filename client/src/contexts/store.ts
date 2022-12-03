@@ -22,7 +22,7 @@ const newFreelancer = () => {
 	return {
 		name: "Boidushya",
 		amt: Math.floor(Math.random() * 30),
-		status: "cleared",
+		status: Math.random() > 0.5 ? true : false,
 		details: "xyz",
 	};
 };
