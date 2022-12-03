@@ -1,0 +1,1 @@
+declare module "@lighthouse-web3/sdk"

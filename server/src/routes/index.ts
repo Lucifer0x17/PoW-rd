@@ -8,7 +8,7 @@ router.get('/', (_, res) => res.status(200).send("Healthy"));
 
 router.use('/user', userRoutes)
 
-router.use('/ens',)
+router.use('/ens')
 
 router.use('/revise')
 
