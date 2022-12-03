@@ -12,9 +12,9 @@ contract Corporate is Context, AutomationCompatibleInterface, ReentrancyGuard {
     // The address of the owner of the company.
     address public superAdmin;
 
-    constructor() {
+    constructor(address _owner) {
         console.log("Deploying a CorporateContract with Solidity");
-        superAdmin = _msgSender();
+        superAdmin = _owner;
     }
 
     // ==================== Arrays ====================
