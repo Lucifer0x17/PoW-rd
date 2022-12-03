@@ -1,0 +1,455 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@function makeLongShadow($color, $color2, $color3, $color4, $color5) {
+	$val: 0px 0px $color;
+	@for $i from 1 through 5 {
+		$val: #{$val}, -#{$i}px #{$i}px #{$color};
+	}
+	@for $i from 6 through 9 {
+		$val: #{$val}, -#{$i}px #{$i}px #{$color2};
+	}
+	@for $i from 10 through 12 {
+		$val: #{$val}, -#{$i}px #{$i}px #{$color3};
+	}
+	@for $i from 11 through 14 {
+		$val: #{$val}, -#{$i}px #{$i}px #{$color4};
+	}
+	@for $i from 15 through 15 {
+		$val: #{$val}, -#{$i}px #{$i}px #{$color5};
+	}
+	@return $val;
+}
+
+// $color: #252526;
+// $color2: #313134;
+// $color3: #3e3e40;
+// $color4: #4a4a4d;
+// $color5: #575759;
+
+// $color: rgb(161 161 170);
+// $color: rgb(113 113 122);
+
+// $color: rgb(82 82 91);
+// $color2: rgb(63 63 70);
+// $color3: rgb(39 39 42);
+// $color4: rgb(24 24 27);
+// $color5: rgb(11 11 13);
+
+$color: theme("colors.neutral.900 / 75%");
+$color2: theme("colors.neutral.800 / 75%");
+$color3: theme("colors.neutral.700 / 75%");
+$color4: theme("colors.neutral.600 / 75%");
+$color5: theme("colors.neutral.500 / 75%");
+
+body {
+	overflow: auto;
+}
+
+#root {
+	overflow: hidden;
+}
+
+body,
+#root {
+	background-image: url("/bg.png");
+	background-color: var(--bg-color);
+	color: var(--text-color);
+	position: relative;
+	min-height: 100vh;
+	@apply tracking-tighter;
+}
+
+.hero-image {
+	cursor: pointer;
+	animation: tilt 500ms forwards;
+	animation-delay: 0.5s;
+	transition: scale 200ms;
+	transform-origin: center center;
+	&:hover {
+		scale: 110%;
+		animation: tilt-zoom 300ms;
+	}
+	&:active {
+		scale: 95%;
+	}
+}
+
+.dotted-line {
+	@apply w-full h-[1px] bg-zinc-800 mb-2 mx-4 relative overflow-hidden;
+	&:after {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		display: block;
+		width: 40px;
+		height: 1px;
+		background: linear-gradient(
+			to right,
+			theme("colors.zinc.500 / 20%"),
+			theme("colors.zinc.500"),
+			theme("colors.zinc.500 / 20%")
+		);
+		animation: move-line 2s linear infinite;
+	}
+}
+
+@keyframes move-line {
+	0% {
+		left: -40px;
+	}
+	100% {
+		left: 100%;
+	}
+}
+
+.cursor-underscore {
+	opacity: 1;
+	animation: cursor 1s infinite steps(1);
+}
+
+@keyframes cursor {
+	0% {
+		visibility: hidden;
+	}
+	50% {
+		visibility: visible;
+	}
+	100% {
+		visibility: hidden;
+	}
+}
+
+.move-right {
+	transform: translateX(-100%);
+	animation: move-right 1s ease forwards;
+	animation-delay: 500ms;
+}
+
+.text-gradient {
+	background: linear-gradient(
+		90deg,
+		var(--text-color),
+		hsl(
+			var(--text-color-h),
+			var(--text-color-l),
+			calc(var(--text-color-s) - 30%)
+		)
+	);
+	background-size: 100%;
+	background-clip: text;
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	-webkit-background-clip: text;
+	-moz-background-clip: text;
+	-moz-text-fill-color: transparent;
+}
+
+@keyframes tilt-zoom {
+	0% {
+		transform: rotate(10deg);
+	}
+	100% {
+		transform: rotate(0deg);
+	}
+}
+
+@keyframes tilt {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(10deg);
+	}
+}
+
+@keyframes move-right {
+	0% {
+		transform: translateX(-100%);
+	}
+	100% {
+		transform: translateX(0%);
+	}
+}
+
+.glow {
+	position: relative;
+	&::before {
+		content: "";
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		z-index: 0;
+		@apply rounded-lg blur-0 bg-gradient-to-br from-red-600 to-blue-600 brightness-0;
+		animation: flicker 2s linear forwards;
+		animation-delay: 1s;
+	}
+}
+
+.font-secondary {
+	color: var(--text-color);
+}
+
+.font-tertiary {
+	color: hsl(
+		var(--text-color-h),
+		var(--text-color-l),
+		calc(var(--text-color-s) - 20%)
+	);
+}
+
+.font-extra {
+	color: hsl(
+		var(--text-color-h),
+		var(--text-color-l),
+		calc(var(--text-color-s) - 30%)
+	);
+}
+
+.text-shadow-large {
+	text-shadow: makeLongShadow($color, $color2, $color3, $color4, $color5);
+	opacity: 0;
+	transform: translateX(-50%);
+	animation: 1s animateShadow 500ms ease infinite,
+		1s fade-in 500ms ease forwards, 500ms move-right 500ms ease forwards;
+}
+@keyframes animateShadow {
+	0% {
+		text-shadow: makeLongShadow($color, $color2, $color3, $color4, $color5);
+	}
+	20% {
+		text-shadow: makeLongShadow($color2, $color3, $color4, $color5, $color);
+	}
+	40% {
+		text-shadow: makeLongShadow($color3, $color4, $color5, $color, $color2);
+	}
+	60% {
+		text-shadow: makeLongShadow($color4, $color5, $color, $color2, $color3);
+	}
+	80% {
+		text-shadow: makeLongShadow($color5, $color, $color2, $color3, $color4);
+	}
+	100% {
+		text-shadow: makeLongShadow($color, $color2, $color3, $color4, $color5);
+	}
+}
+
+.divider,
+.bg-primary {
+	background-image: url("/navy.png");
+	background-color: var(--bg-color);
+}
+
+.text-animate-up {
+	transform: translateY(125%);
+	position: relative;
+	display: inline-block;
+	opacity: 0;
+	animation: animate-up 500ms ease forwards;
+	animation-delay: calc(var(--start) + var(--delay));
+}
+
+.block-animate-up {
+	transform: translateY(150%);
+	position: relative;
+	opacity: 0;
+	animation: animate-up 500ms ease forwards;
+	animation-delay: calc(var(--start) + var(--delay));
+}
+
+.footer-animate-up {
+	transform: translateY(125%);
+	opacity: 0;
+	animation: footer-animate-up 500ms ease forwards;
+	animation-delay: calc(var(--start) + var(--delay));
+}
+
+.fade-in {
+	opacity: 0;
+	animation: fade-in 500ms ease forwards;
+	animation-delay: calc(var(--start) + var(--delay));
+}
+
+.ReactModal__Overlay {
+	opacity: 0;
+	z-index: 10000;
+	background-color: hsla(
+		var(--bg-color-h),
+		var(--bg-color-l),
+		var(--bg-color-s),
+		0.75
+	) !important;
+	transition: opacity 200ms;
+}
+
+.ReactModal__Overlay--after-open {
+	opacity: 1;
+}
+
+.ReactModal__Overlay--before-close {
+	opacity: 0;
+}
+
+.ReactModal__Content--before-close {
+	transform: scale(90%) !important;
+}
+
+.ReactModal__Content--after-open {
+	transform: scale(100%) !important;
+}
+
+.ReactModal__Content {
+	@apply mx-auto max-w-2xl transition-all scale-90 text-left rounded-2xl bg-zinc-800 bg-opacity-50 border border-gray-400 border-opacity-10 backdrop-blur-xl shadow-lg;
+}
+
+.w3a-text-field {
+	box-shadow: none;
+}
+
+.ReactModal__Body--open,
+.ReactModal__Html--open {
+	overflow: hidden;
+}
+
+.main-text-in {
+	opacity: 0;
+	position: relative;
+	display: inline-block;
+	animation: animate-right 500ms ease forwards;
+	animation-delay: 600ms;
+	transform: translateX(-150%);
+}
+
+@keyframes shine {
+	0% {
+		background-position: 0;
+	}
+	60% {
+		background-position: 180px;
+	}
+	100% {
+		background-position: 180px;
+	}
+}
+
+.card-wrapper {
+	position: relative;
+	overflow: hidden;
+	&::after {
+		content: "";
+		position: absolute;
+		width: 5rem;
+		height: 5rem;
+		left: var(--x);
+		top: var(--y);
+		transform: translate(-50%, -50%);
+		z-index: -1;
+		opacity: var(--opacity);
+		transition: opacity 500ms ease;
+		@apply bg-yellow-600 bg-opacity-20 rounded-full blur-3xl;
+	}
+}
+
+.extra-wrapper {
+	position: relative;
+	&::before {
+		content: "";
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		z-index: 0;
+		@apply rounded-2xl blur-0 bg-gradient-to-br from-yellow-400 via-violet-500 to-orange-500 brightness-0;
+		animation: flicker 2s linear forwards;
+		animation-delay: 500ms;
+	}
+}
+
+@keyframes flicker {
+	0% {
+		filter: blur(5px) brightness(1);
+	}
+	3% {
+		filter: blur(30px) brightness(0);
+	}
+	6% {
+		filter: blur(30px) brightness(0);
+	}
+	7% {
+		filter: blur(15px) brightness(1);
+	}
+	8% {
+		filter: blur(30px) brightness(0);
+	}
+	9% {
+		filter: blur(30px) brightness(1);
+	}
+	10% {
+		filter: blur(20px) brightness(0);
+	}
+	20% {
+		filter: blur(30px) brightness(1);
+	}
+	50% {
+		filter: blur(30px) brightness(1);
+	}
+	70% {
+		filter: blur(30px) brightness(1);
+	}
+	100% {
+		filter: blur(30px) brightness(1);
+	}
+}
+
+@keyframes animate-up {
+	0% {
+		opacity: 0;
+		transform: translateY(125%);
+	}
+	33% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes footer-animate-up {
+	0% {
+		opacity: 0;
+		transform: translateY(150%);
+	}
+	33% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 0.2;
+		transform: translateY(0);
+	}
+}
+
+@keyframes animate-right {
+	0% {
+		opacity: 0;
+		transform: translateX(-150%);
+	}
+	33% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+@keyframes fade-in {
+	100% {
+		opacity: 1;
+	}
+}
