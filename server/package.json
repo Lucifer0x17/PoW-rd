@@ -14,6 +14,8 @@
   "license": "MIT",
   "licenseName": "MIT",
   "dependencies": {
+    "@biconomy/core-types": "^0.0.4",
+    "@biconomy/smart-account": "^0.0.4",
     "@ensdomains/ensjs": "^3.0.0-alpha.37",
     "argon2": "^0.30.1",
     "cookie-parser": "^1.4.6",
