@@ -4,8 +4,8 @@ import { useParams } from "react-router-dom";
 import Button from "@/elements/Button";
 import Modal from "@/elements/Modal";
 import { toast } from "react-toastify";
-import Table from "@/elements/Table";
 import { useDataStore } from "@/contexts/store";
+import FreelancerTable from "@/elements/FreelancerTable";
 
 const Balance = () => {
 	const balance = useDataStore(state => state.balance);
@@ -63,7 +63,7 @@ const Home = () => {
 				[] Current Balance for contract
 			*/}
 			<Balance />
-			<Table />
+			<FreelancerTable />
 		</>
 	);
 };
@@ -140,24 +140,44 @@ const Freelancer = () => {
 
 	return (
 		<DefaultLayout base="/dashboard/freelancer">
-			<div className="p-8 py-6 font-secondary ">
+			<div className="p-8 py-6 font-secondary w-full">
 				<div>
-					<span className="font-serif">Dashboard </span>
-					<span className="text-lg font-medium font-extra">
-						/ Freelancer{" "}
-						{id && (
-							<span className="text-sm font-normal text-zinc-500">
-								/ {id}
+					<div className="w-full flex justify-between items-center">
+						<h1>
+							<span className="font-serif">Dashboard </span>
+							<span className="text-lg font-medium font-extra">
+								/ Freelancer{" "}
+								{id && (
+									<span className="text-sm font-normal text-zinc-500">
+										/ {id}
+									</span>
+								)}
 							</span>
-						)}
-					</span>
-				</div>
-				<div className="mt-8 text-base font-normal">
-					{
-						PATH_MAPS.filter(
-							item => item.path === (id ? id : "")
-						)[0].component
-					}
+						</h1>
+						<a className="cursor-pointer p-2 bg-zinc-800 bg-opacity-50 border border-zinc-800 rounded-full text-zinc-400">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								strokeWidth={1.5}
+								stroke="currentColor"
+								className="w-5 h-5"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
+								/>
+							</svg>
+						</a>
+					</div>
+					<div className="mt-8 text-base font-normal">
+						{
+							PATH_MAPS.filter(
+								item => item.path === (id ? id : "")
+							)[0].component
+						}
+					</div>
 				</div>
 			</div>
 		</DefaultLayout>

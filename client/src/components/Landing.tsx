@@ -46,7 +46,7 @@ const HeroSection = () => {
 					clientId,
 					chainConfig: {
 						chainNamespace: CHAIN_NAMESPACES.EIP155,
-						chainId: "80001",
+						chainId: "0x13881",
 						rpcTarget: "https://rpc-mumbai.maticvigil.com/", // This is the public RPC we have added, please pass on your own endpoint while creating an app
 					},
 					uiConfig: {
@@ -56,7 +56,20 @@ const HeroSection = () => {
 
 				setWeb3auth(web3auth);
 
-				await web3auth.initModal();
+				await web3auth.initModal({
+					//@ts-ignore
+					modalConfig: {
+						[WALLET_ADAPTERS.OPENLOGIN]: {
+							label: "openlogin",
+							loginMethods: {
+								email_passwordless: {
+									showOnModal: true,
+								},
+							},
+							showOnModal: false,
+						},
+					},
+				});
 				if (web3auth.provider) {
 					setProvider(web3auth.provider);
 				} else {

@@ -83,7 +83,7 @@ const DefaultLayout: React.FC<BaseProps> = ({ children, base }) => {
 									arrow={false}
 									offset={[0, 24]}
 									content={label ? label : "Home"}
-									className="font-medium cursor-pointer text-zinc-500"
+									className="font-medium cursor-pointer text-zinc-300"
 								>
 									{icon}
 								</Tippy>
@@ -98,7 +98,7 @@ const DefaultLayout: React.FC<BaseProps> = ({ children, base }) => {
 							arrow={false}
 							offset={[0, 24]}
 							content={"Settings"}
-							className="font-medium cursor-pointer text-zinc-500"
+							className="font-medium cursor-pointer text-zinc-300"
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
