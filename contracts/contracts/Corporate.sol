@@ -4,36 +4,53 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
+import "@chainlink/contracts/src/v0.8/AutomationCompatible.sol";
+
 import "hardhat/console.sol";
 
-contract Corporate is Context, ReentrancyGuard {
+contract Corporate is Context, AutomationCompatibleInterface, ReentrancyGuard {
     // The address of the owner of the company.
     address public superAdmin;
 
-    constructor() {
+    constructor(address _owner) {
         console.log("Deploying a CorporateContract with Solidity");
-        superAdmin = _msgSender();
+        superAdmin = _owner;
     }
 
     // ==================== Arrays ====================
     // Addresses of the admin.
-    address[] public admins;
+    // address[] public admins;
 
     // Addresses of the employees.
     address[] public employees;
-
-    // Addresses of the freelancers.
-    address[] public freelancers;
 
     // ==================== Structs ====================
     // Struct for the employee.
     struct Employee {
         string name;
         address walletAddress;
-        uint256 payPeriod;
+        uint8 payPeriod;
         uint256 payAmount;
         uint256 startTimestamp;
         uint256 nextPayTimestamp;
+    }
+
+    // ==================== Mappings ====================
+    // Mapping for the employee.
+    mapping(address => Employee) public employeeMapping;
+
+    // Mapping for the freelancer's accepted invoices. (address => tokenID => tokenURI)
+    mapping(address => mapping(uint256 => string))
+        public freelancerInvoiceMapping;
+
+    // ==================== ENUMS ====================
+    enum PayPeriod {
+        week,
+        twoWeeks,
+        month,
+        threeMonths,
+        sixMonths,
+        year
     }
 
     // =============EVENTS================= //
@@ -47,23 +64,6 @@ contract Corporate is Context, ReentrancyGuard {
     event InvoiceRejected(uint256 indexed tokenId, address);
     event InvoicePaid(uint256 indexed tokenId, address);
 
-    // ==================== ENUMS ====================
-    enum PayPeriod {
-        week,
-        twoWeeks,
-        month,
-        threeMonths,
-        sixMonths,
-        year
-    }
-
-    // ==================== Mappings ====================
-    // Mapping for the employee.
-    mapping(address => Employee) public employeeMapping;
-
-    // Mapping for the freelancer's invoices.
-    mapping(address => uint256[]) public freelancerInvoiceMapping;
-
     // =============MODIFIERS================= //
 
     // To check if the caller is Super Admin or not.
@@ -73,49 +73,49 @@ contract Corporate is Context, ReentrancyGuard {
     }
 
     // To check if the caller is Admin or not.
-    modifier onlyAdmin() {
-        bool isAdmin = false;
-        for (uint i = 0; i < admins.length; i++) {
-            if (admins[i] == _msgSender()) {
-                isAdmin = true;
-                break;
-            }
-        }
-        require(isAdmin, "Caller is not Admin");
-        _;
-    }
+    // modifier onlyAdmin() {
+    //     bool isAdmin = false;
+    //     for (uint i = 0; i < admins.length; i++) {
+    //         if (admins[i] == _msgSender()) {
+    //             isAdmin = true;
+    //             break;
+    //         }
+    //     }
+    //     require(isAdmin, "Caller is not Admin");
+    //     _;
+    // }
 
-    // ==================== SUPER ADMIN Functions ====================
+    // // ==================== SUPER ADMIN Functions ====================
 
-    //* FUNCTION: TO add the admin to the admins array and notiying the event.
-    function addAdmin(address _admin) private onlySuperAdmin {
-        admins.push(_admin);
+    // //* FUNCTION: TO add the admin to the admins array and notiying the event.
+    // function addAdmin(address _admin) public onlySuperAdmin {
+    //     admins.push(_admin);
 
-        emit AdminAdded(_admin);
-    }
+    //     emit AdminAdded(_admin);
+    // }
 
-    //* FUNCTION: TO remove the admin from the admins array and notiying the event.
-    function removeAdmin(address _admin) private onlySuperAdmin {
-        for (uint i = 0; i < admins.length; i++) {
-            if (admins[i] == _admin) {
-                admins[i] = admins[admins.length - 1];
-                admins.pop();
-                break;
-            }
-        }
+    // //* FUNCTION: TO remove the admin from the admins array and notiying the event.
+    // function removeAdmin(address _admin) public onlySuperAdmin {
+    //     for (uint i = 0; i < admins.length; i++) {
+    //         if (admins[i] == _admin) {
+    //             admins[i] = admins[admins.length - 1];
+    //             admins.pop();
+    //             break;
+    //         }
+    //     }
 
-        emit AdminRemoved(_admin);
-    }
+    //     emit AdminRemoved(_admin);
+    // }
 
     // ==================== ADMIN Functions ====================
     //* FUNCTION: TO add the employee to the employees array and notiying the event.
     function addEmployee(
         string memory _name,
         address _walletAddress,
-        uint256 _payPeriod,
+        uint8 _payPeriod,
         uint256 _payAmount,
         uint256 _startTimestamp
-    ) public onlyAdmin {
+    ) public onlySuperAdmin {
         // Checking if the employee is already added or not.
         require(
             employeeMapping[_walletAddress].walletAddress == address(0),
@@ -131,7 +131,7 @@ contract Corporate is Context, ReentrancyGuard {
             _walletAddress,
             _payPeriod,
             _payAmount,
-            _startTimestamp,
+            block.timestamp + _startTimestamp,
             _startTimestamp + getSeconds(_payPeriod)
         );
 
@@ -139,7 +139,7 @@ contract Corporate is Context, ReentrancyGuard {
     }
 
     //* FUNCTION: TO remove the employee from the employees array and notiying the event.
-    function removeEmployee(address _walletAddress) public onlyAdmin {
+    function removeEmployee(address _walletAddress) public onlySuperAdmin {
         // Checking if the employee is already added or not.
         require(
             employeeMapping[_walletAddress].walletAddress != address(0),
@@ -162,12 +162,12 @@ contract Corporate is Context, ReentrancyGuard {
     }
 
     //* FUNCTION: To add funds to the contract.
-    function addFunds() public payable onlyAdmin {
+    function addFunds() public payable onlySuperAdmin {
         emit FundsAdded(msg.value);
     }
 
     //* FUNCTION: To withdraw funds from the contract.
-    function withdrawFunds(uint256 _amount) public onlyAdmin nonReentrant {
+    function withdrawFunds(uint256 _amount) public onlySuperAdmin nonReentrant {
         require(
             address(this).balance - getWithdrawableAmount() >= _amount,
             "Insufficient funds in the contract"
@@ -179,14 +179,41 @@ contract Corporate is Context, ReentrancyGuard {
         emit FundsWithdrawn(_amount);
     }
 
+    //* FUNCTION: Pay the employee their salary.
+    function payEmployee(address _walletAddress) public onlySuperAdmin {
+        // Checking if the employee is already added or not.
+        require(
+            employeeMapping[_walletAddress].walletAddress != address(0),
+            "Employee not added"
+        );
+
+        // Checking if the employee is eligible for the salary or not.
+        require(
+            block.timestamp >= employeeMapping[_walletAddress].nextPayTimestamp,
+            "Employee not eligible for the salary"
+        );
+
+        // Paying the employee.
+        (bool success, ) = _walletAddress.call{
+            value: employeeMapping[_walletAddress].payAmount
+        }("");
+        require(success, "Payment failed.");
+
+        // Updating the nextPayTimestamp.
+        employeeMapping[_walletAddress].nextPayTimestamp =
+            block.timestamp +
+            getSeconds(employeeMapping[_walletAddress].payPeriod);
+    }
+
     //* FUNCTION: To response to the invoice generated by the freelancer.
     function responseToInovice(
         bool _response,
         uint256 _tokenId,
+        string memory _tokenURI,
         address _freelancerAddress
-    ) public onlyAdmin {
+    ) public onlySuperAdmin {
         if (_response == true) {
-            generateInvoice(_tokenId, _freelancerAddress);
+            acceptInvoice(_tokenId, _freelancerAddress, _tokenURI);
         } else {
             emit InvoiceRejected(_tokenId, _freelancerAddress);
         }
@@ -197,39 +224,35 @@ contract Corporate is Context, ReentrancyGuard {
         uint256 _tokenId,
         address _freelancerAddress,
         uint256 _amountToPay
-    ) public onlyAdmin {
-        // Getting the invoice from the freelancer.
-        uint256[] storage invoices = freelancerInvoiceMapping[
-            _freelancerAddress
-        ];
+    ) public onlySuperAdmin {
+        require(
+            address(this).balance - getWithdrawableAmount() >= _amountToPay,
+            "Insufficient funds in the contract"
+        );
 
-        // Checking if the invoice is generated or not.
-        require(invoices[_tokenId] != 0, "Invoice not generated");
-
-        // Paying the freelancer.
         (bool success, ) = _freelancerAddress.call{value: _amountToPay}("");
-        require(success, "Payment failed.");
+        require(success, "Withdraw failed.");
 
         emit InvoicePaid(_tokenId, _freelancerAddress);
     }
 
     //======================GET FUNCTIONS=====================//
     //* FUNCTION: To get the seconds of the pay period.
-    function getSeconds(
-        uint256 _payPeriod
-    ) public pure returns (uint256 seconds_) {
-        if (_payPeriod == uint256(PayPeriod.week)) {
-            return 604800;
-        } else if (_payPeriod == uint256(PayPeriod.twoWeeks)) {
-            return 1209600;
-        } else if (_payPeriod == uint256(PayPeriod.month)) {
-            return 2629743;
-        } else if (_payPeriod == uint256(PayPeriod.threeMonths)) {
-            return 7889229;
-        } else if (_payPeriod == uint256(PayPeriod.sixMonths)) {
-            return 15778458;
-        } else if (_payPeriod == uint256(PayPeriod.year)) {
-            return 31556926;
+    function getSeconds(uint8 index) internal pure returns (uint64 time) {
+        require(index <= uint8(type(PayPeriod).max), "ERR:ST"); //ST => Small Time
+
+        if (index == 0) {
+            time = uint64(7 days);
+        } else if (index == 1) {
+            time = uint64(14 days);
+        } else if (index == 2) {
+            time = uint64(30 days);
+        } else if (index == 3) {
+            time = uint64(90 days);
+        } else if (index == 4) {
+            time = uint64(180 days);
+        } else if (index == 5) {
+            time = uint64(365 days);
         }
     }
 
@@ -271,16 +294,62 @@ contract Corporate is Context, ReentrancyGuard {
                 amountToBePaid += employeeMapping[employees[i]].payAmount;
             }
         }
-        return amountToBePaid;
+        return address(this).balance - amountToBePaid;
     }
 
     //* FUNCTION: Accepting the request of the freelancer and adding the tokenId to the freelancer mappings.
-    function generateInvoice(
+    function acceptInvoice(
         uint256 tokenId,
-        address _freelancerAddress
+        address _freelancerAddress,
+        string memory _tokenURI
     ) internal {
-        freelancerInvoiceMapping[_freelancerAddress].push(tokenId);
+        freelancerInvoiceMapping[_freelancerAddress][tokenId] = _tokenURI;
 
         emit InvoiceGenerated(tokenId, _freelancerAddress);
+    }
+
+    //* FUNCTION: To itereate through every employee who have a the pay cycle in 24 hours from the block.timestamp, and making the upkeep transaction true to send them the PayAmount.
+    function checkUpkeep(
+        bytes calldata /* checkData */
+    )
+        external
+        view
+        override
+        returns (bool upkeepNeeded, bytes memory /* performData */)
+    {
+        for (uint i = 0; i < employees.length; i++) {
+            if (
+                block.timestamp >=
+                employeeMapping[employees[i]].nextPayTimestamp &&
+                employeeMapping[employees[i]].nextPayTimestamp <
+                block.timestamp + (24 * 1 hours)
+            ) {
+                upkeepNeeded = true;
+                break;
+            }
+        }
+    }
+
+    //* FUNCTION: To itereate through every employee who have a the pay cycle in 24 hours from the block.timestamp, and sending them their payamount and updating their nextPayTimestamp.
+    function performUpkeep(bytes calldata /* performData */) external override {
+        for (uint i = 0; i < employees.length; i++) {
+            if (
+                block.timestamp >=
+                employeeMapping[employees[i]].nextPayTimestamp &&
+                employeeMapping[employees[i]].nextPayTimestamp <
+                block.timestamp + (24 * 1 hours)
+            ) {
+                // Paying the employee.
+                (bool success, ) = employees[i].call{
+                    value: employeeMapping[employees[i]].payAmount
+                }("");
+                require(success, "Payment failed.");
+
+                // Updating the nextPayTimestamp.
+                employeeMapping[employees[i]].nextPayTimestamp =
+                    block.timestamp +
+                    getSeconds(employeeMapping[employees[i]].payPeriod);
+            }
+        }
     }
 }
