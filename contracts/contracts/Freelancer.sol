@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
 import "hardhat/console.sol";
 
-abstract contract FreelancerNFT is Counter, Context, ERC721URIStorage {
+abstract contract FreelancerNFT is Context, ERC721URIStorage {
     address companyAddress;
 
     using Counters for Counters.Counter;
