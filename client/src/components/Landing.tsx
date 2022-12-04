@@ -11,6 +11,8 @@ import {
 	WALLET_ADAPTERS,
 } from "@web3auth/base";
 import { useDataStore } from "@/contexts/store";
+import useSound from "use-sound";
+import powered from "@/assets/pronounce.mp3";
 
 const clientId =
 	"BN0RRmypB4ulOB9uJ3UvFbyIN5rcprkklaVHFGHjfRapx895lFZOSG6ANvMUNdg-w1Zvk22YvLZYmMJbnYzH54A";
@@ -83,15 +85,47 @@ const HeroSection = () => {
 		init();
 	}, []);
 
+	const [play] = useSound(powered);
+
 	return (
 		<div className="relative flex items-center justify-between h-full max-w-full gap-32 mx-8 lg:max-w-3xl">
 			<div className="max-w-lg space-y-2 w-fit">
 				<h1
-					className="font-semibold leading-normal tracking-normal w-fit text-7xl font-secondary font-headline text-gradient main-text-in"
+					className="font-semibold leading-none tracking-normal w-fit text-7xl font-secondary font-headline text-gradient main-text-in"
 					data-text="$Payroll"
 				>
 					PoW'rd<span className="cursor-underscore">_</span>
 				</h1>
+				<p
+					className="text-zinc-600 space-x-2 !mb-2 leading-none flex items-center block-animate-up"
+					style={{
+						// @ts-ignore
+						"--start": "150ms",
+						"--delay": `0.5s`,
+					}}
+				>
+					<span className="font-normal text-base">/powered/</span>
+					<button
+						/* @ts-ignore */
+						onClick={play}
+						className="inline-block hover:text-zinc-400"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							strokeWidth={1.5}
+							stroke="currentColor"
+							className="w-4 h-4"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z"
+							/>
+						</svg>
+					</button>
+				</p>
 				<p className="text-lg font-medium font-extra">
 					{subtitle.map((word, index) => (
 						<span
