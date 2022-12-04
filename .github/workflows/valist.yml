@@ -17,6 +17,7 @@ jobs:
 
       - name: Build and export Create React App
         run: |
+          cd client
           npm install
           npm run build
 
@@ -30,5 +31,5 @@ jobs:
           account: powrd
           project: powrd
           release: ${{ env.TIMESTAMP }}
-          platform-web: build
+          platform-web: client/build
         
