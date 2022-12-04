@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts --files",
     "start": "node ./dist/server",
-    "build": "tsc && cp -f ./src/config/config.env ./dist/config",
-    "postinstall": "tsc -p tsconfig.release.json"
+    "build": "tsc && cp -f ./src/config/config.env ./dist/config"
   },
   "keywords": [],
   "author": "Lucifer",
