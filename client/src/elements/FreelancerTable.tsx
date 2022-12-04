@@ -81,7 +81,7 @@ function FreelancerTable() {
 				id: "identity",
 				columns: [
 					{
-						Header: "Client Name",
+						Header: "Name",
 						accessor: "name",
 					},
 					{
