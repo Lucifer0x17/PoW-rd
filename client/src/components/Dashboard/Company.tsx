@@ -8,6 +8,7 @@ import Table from "@/elements/Table";
 import { useDataStore } from "@/contexts/store";
 import FreelancerTable from "@/elements/FreelancerTable";
 import { SearchContainer } from "../../elements/SearchContainer";
+import ReactModal from "react-modal";
 
 const Balance = () => {
 	const balance = useDataStore(state => state.balance);
@@ -379,8 +380,68 @@ const PATH_MAPS = [
 	},
 ];
 
+interface InfoTypes {
+	name: string | null;
+	address: string | null;
+}
+
+const ModalContent: React.FC<{
+	info: InfoTypes;
+	setInfo: (info: InfoTypes) => void;
+}> = ({ info, setInfo }) => {
+	return (
+		<div className="w-full grid place-items-center">
+			<h1 className="text-2xl font-semibold leading-none">
+				Looks like you haven't created a company yet
+			</h1>
+			<form className="w-full mt-6 space-x-4 ">
+				<input
+					className="bg-zinc-800 w-fit appearance-none border-2 border-zinc-700 rounded py-2 px-4 text-zinc-200 leading-tight focus:outline-none focus:bg-zinc-800	 focus:border-sky-800"
+					type="text"
+					value={info.name || ""}
+					onChange={e => {
+						setInfo({
+							...info,
+							//@ts-ignore
+							name: e.target.value,
+						});
+					}}
+					placeholder="Company Name"
+				/>
+				<input
+					className="bg-zinc-800 w-fit appearance-none border-2 border-zinc-700 rounded py-2 px-4 text-zinc-200 leading-tight focus:outline-none focus:bg-zinc-800	 focus:border-sky-800"
+					type="text"
+					value={info.address || ""}
+					onChange={e => {
+						setInfo({
+							...info,
+							//@ts-ignore
+							address: e.target.value,
+						});
+					}}
+					placeholder="Company ENS"
+				/>
+			</form>
+		</div>
+	);
+};
+
 const Company = () => {
 	const { id } = useParams();
+
+	const [info, setInfo] = useState<InfoTypes>({
+		name: null,
+		address: null,
+	});
+
+	const companyExists = false;
+
+	const [showModal, setShowModal] = useState(!companyExists);
+
+	const handleSubmit = () => {
+		//send to backend then close modal
+		setShowModal(false);
+	};
 
 	return (
 		<DefaultLayout base="/dashboard/company">
@@ -426,6 +487,39 @@ const Company = () => {
 						}
 					</div>
 				</div>
+				<ReactModal
+					isOpen={showModal}
+					closeTimeoutMS={200}
+					onRequestClose={() => setShowModal(false)}
+					style={{
+						overlay: {
+							display: "grid",
+							placeItems: "center",
+						},
+						content: {
+							border: "",
+							inset: "",
+							width: "90%",
+							maxHeight: "clamp(300px, 90vmin, 500px)",
+							background: "",
+							borderRadius: "",
+							padding: "",
+						},
+					}}
+					shouldCloseOnOverlayClick={false}
+				>
+					<div className="sticky top-0 left-0 z-20 flex justify-between px-8 py-6 text-lg border-b border-gray-400 font-secondary bg-zinc-900 border-opacity-10">
+						<span>New Company</span>
+					</div>
+					<div className="relative px-8 py-8 w-fit">
+						<ModalContent info={info} setInfo={setInfo} />
+					</div>
+					<div className="sticky bottom-0 right-0 flex flex-row-reverse gap-4 px-8 py-6 mt-0 border-t border-gray-400 bg-zinc-900 border-opacity-10">
+						<Button variant="primary" onClick={handleSubmit}>
+							Create Company
+						</Button>
+					</div>
+				</ReactModal>
 			</div>
 		</DefaultLayout>
 	);
