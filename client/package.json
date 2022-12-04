@@ -9,6 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@biconomy/core-types": "^0.0.4",
+    "@biconomy/smart-account": "^0.0.4",
+    "@biconomy/web3-auth": "^0.0.4",
     "@popperjs/core": "^2.11.6",
     "@tippyjs/react": "^4.2.6",
     "@web3auth/base": "^3.2.0",
