@@ -31,5 +31,5 @@ jobs:
           account: powrd
           project: powrd
           release: ${{ env.TIMESTAMP }}
-          platform-web: client/build/
+          platform-web: client/dist
         
