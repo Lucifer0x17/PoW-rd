@@ -14,6 +14,9 @@ export const createNftSchema = z.object({
         }),
         amount: z.number({
             required_error: "Amount is required"
+        }),
+        companyAddress: z.string({
+            required_error: "Companny is required"
         })
     })
 })
@@ -38,6 +41,5 @@ export type NftPropertiesInput = {
     amount?: number;
     isCleared?: string;
     walletAddress?: string;
-    isVerified?: string;
     companyAddress?: string;
 }[]

@@ -1,5 +1,5 @@
 import express from "express"
-import userRoutes from "./user.route"
+import freelancerRoutes from "./freelancer.route"
 import companyRoutes from "./company.route"
 
 const router = express.Router()
@@ -7,7 +7,7 @@ const router = express.Router()
 router.get('/', (_, res) => res.status(200).send("Healthy"));
 
 
-router.use('/user', userRoutes)
+router.use('/freelancer', freelancerRoutes)
 
 // router.use('/ens')
 
